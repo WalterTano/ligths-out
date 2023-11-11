@@ -1,23 +1,23 @@
 import numpy as np
 import lights_out_sim
 
-# Genera un vector de solución a partir de un tablero de lights out.
-def obtener_solucion(tablero):
+# Genera el sistema de ecuaciones correspondiente al tablero de lights out provisto.
+def generar_sistema(tablero):
     tamano = len(tablero)
     tamano_cuadrado = tamano ** 2
-    matriz_sistema = generar_sistema(tablero)
+    matriz_sistema = np.zeros((tamano_cuadrado, tamano_cuadrado), dtype=int) # Generamos matriz vacía
+    for i in range(0, tamano_cuadrado):
+        for j in range(0, tamano_cuadrado):
+            if i == j: # Es el mismo botón
+                matriz_sistema[i, j] = 1
+            elif (i // tamano == j // tamano and abs(i - j) == 1) or (  # El botón está a la izquierda o a la derecha
+                    i % tamano == j % tamano and abs(i - j) == tamano): # El botón está arriba o abajo
+                matriz_sistema[i, j] = 1
+                
     entradas = np.array(tablero).flatten().T
     entradas.resize(tamano_cuadrado, 1)
-    matriz_aumentada = np.hstack((matriz_sistema, entradas))
-
-    # Escalonamos la matriz.
-    matriz_aumentada_escalonada = escalonar_tablero(matriz_aumentada, tamano_cuadrado)
-
-    # Convertimos la matriz escalonada a la matriz identidad para obtener la solución.
-    matriz_aumentada_identidad = eliminar_hacia_atras(matriz_aumentada_escalonada, tamano_cuadrado)
-
-    respuesta = matriz_aumentada_identidad[:, -1]
-    return respuesta
+    matriz_sistema = np.hstack((matriz_sistema, entradas))
+    return matriz_sistema
 
 # Dada la matriz aumentada del sistema de ecuaciones de un tablero y su tamaño, se construye la forma
 # escalonada de la matriz.
@@ -48,22 +48,21 @@ def eliminar_hacia_atras(matriz_escalonada, tamano_cuadrado):
                 matriz_escalonada[i] = lights_out_sim.suma_binaria(matriz_escalonada[i], matriz_escalonada[columna])
                 
     return matriz_escalonada
-    
-# Genera el sistema de ecuaciones correspondiente al tablero de lights out provisto.
-def generar_sistema(tablero):
+
+# Genera un vector de solución a partir de un tablero de lights out.
+def obtener_solucion(tablero):
     tamano = len(tablero)
     tamano_cuadrado = tamano ** 2
-    matriz_sistema = np.zeros((tamano_cuadrado, tamano_cuadrado), dtype=int) # Generamos matriz vacía
-    for i in range(0, tamano_cuadrado):
-        for j in range(0, tamano_cuadrado):
-            if i == j: # Es el mismo botón
-                matriz_sistema[i, j] = 1
-            elif (i // tamano == j // tamano and abs(i - j) == 1) or (  # El botón está a la izquierda o a la derecha
-                    i % tamano == j % tamano and abs(i - j) == tamano): # El botón está arriba o abajo
-                matriz_sistema[i, j] = 1
-                
-    return matriz_sistema
-    
+    matriz_sistema_aumentada = generar_sistema(tablero)
+
+    # Escalonamos la matriz.
+    msa_escalonada = escalonar_tablero(matriz_sistema_aumentada, tamano_cuadrado)
+
+    # Realizamos eliminación hacia atrás para obtener la solución.
+    msa_solucion = eliminar_hacia_atras(msa_escalonada, tamano_cuadrado)
+
+    vector_solucion = msa_solucion[:, -1]
+    return vector_solucion
 
 tablero = lights_out_sim.generar_tablero_aleatorio(6)
 print(f'Tablero inicial:\n{tablero}')
