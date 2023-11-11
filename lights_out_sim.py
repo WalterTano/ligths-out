@@ -6,7 +6,7 @@ def suma_binaria(a, b):
     return (a + b) % 2
 
 # Popula un tablero aleatoriamente.
-# Esta función no garantiza generar un tablero con solución para las dimensiones 4x4 y 5x5.
+# Esta función no garantiza generar un tablero con solución.
 def generar_tablero_aleatorio(tamano):
     tablero = []
     for i in range(0, tamano):

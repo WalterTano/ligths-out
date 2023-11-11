@@ -14,7 +14,7 @@ def obtener_solucion(tablero):
     matriz_aumentada_escalonada = escalonar_tablero(matriz_aumentada, tamano_cuadrado)
 
     # Convertimos la matriz escalonada a la matriz identidad para obtener la solución.
-    matriz_aumentada_identidad = obtener_matriz_identidad(matriz_aumentada_escalonada, tamano_cuadrado)
+    matriz_aumentada_identidad = eliminar_hacia_atras(matriz_aumentada_escalonada, tamano_cuadrado)
 
     respuesta = matriz_aumentada_identidad[:, -1]
     return respuesta
@@ -37,9 +37,9 @@ def escalonar_tablero(matriz_aumentada, tamano_cuadrado):
                 
     return matriz_aumentada
                 
-# Dada la forma escalonada de la matriz aumentada del sistema de ecuaciones de un tablero y su tamaño, 
-# se realizan las operaciones elementales para convertir la matriz del sistema a la matriz identidad.
-def obtener_matriz_identidad(matriz_escalonada, tamano_cuadrado):
+# Dada la forma triangular superior de la matriz aumentada del sistema de ecuaciones de un tablero y su tamaño, 
+# se realiza una eliminación hacia atrás usando operaciones elementales.
+def eliminar_hacia_atras(matriz_escalonada, tamano_cuadrado):
     for columna in range(tamano_cuadrado - 1, 0, -1):
         for i in range(columna - 1, -1, -1):
             # Por cada fila y columna, en orden ascendente, si en una fila anterior hay un 1 en la misma columna,
