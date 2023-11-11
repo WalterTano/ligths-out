@@ -2,7 +2,7 @@ import numpy as np
 from random import randint
 
 # Genera un vector de solución a partir de un tablero de lights out.
-def resolver(tablero):
+def obtener_solucion(tablero):
     tamano = len(tablero)
     tamano_cuadrado = tamano ** 2
     matriz_sistema = generar_sistema(tablero)
@@ -49,18 +49,19 @@ def obtener_matriz_identidad(matriz_escalonada, tamano_cuadrado):
 def generar_sistema(tablero):
     tamano = len(tablero)
     tamano_cuadrado = tamano ** 2
-    matriz_adyacencias = np.zeros((tamano_cuadrado, tamano_cuadrado), dtype=int) # Generamos matriz vacía
+    matriz_sistema = np.zeros((tamano_cuadrado, tamano_cuadrado), dtype=int) # Generamos matriz vacía
     for i in range(0, tamano_cuadrado):
         for j in range(0, tamano_cuadrado):
             if i == j: # Es el mismo botón
-                matriz_adyacencias[i, j] = 1
+                matriz_sistema[i, j] = 1
             elif (i // tamano == j // tamano and abs(i - j) == 1) or (  # El botón está a la izquierda o a la derecha
                     i % tamano == j % tamano and abs(i - j) == tamano): # El botón está arriba o abajo
-                matriz_adyacencias[i, j] = 1
+                matriz_sistema[i, j] = 1
                 
-    return matriz_adyacencias
+    return matriz_sistema
 
-# Popula un tablero aleatoriamente. Esto puede generar tableros sin solución
+# Popula un tablero aleatoriamente.
+# Esta función no garantiza generar un tablero con solución para las dimensiones 4x4 y 5x5.
 def generar_tablero_aleatorio(tamano):
     tablero = []
     for i in range(0, tamano):
@@ -69,7 +70,7 @@ def generar_tablero_aleatorio(tamano):
             fila.append(randint(0, 1))
             
         tablero.append(fila)
-        
+                        
     return np.array(tablero)
 
 # Resuelve un tablero a partir de un vector de solución.
@@ -110,10 +111,17 @@ def simular_boton(tablero, i, j):
 def suma_binaria(a, b):
     return (a + b) % 2
     
-            
-tablero = generar_tablero_aleatorio(5)
+# Tablero de ejemplo
+tablero = np.array([
+    [1, 1, 1, 1, 0],
+    [0, 0, 1, 1, 0],
+    [1, 0, 0, 1, 0],
+    [0, 0, 0, 0, 1],
+    [0, 1, 1, 1, 1]
+])
+tablero = generar_tablero_aleatorio(7)
 print(f'Tablero inicial:\n{tablero}')
-vector_solucion = resolver(tablero)
+vector_solucion = obtener_solucion(tablero)
 print(f'Vector de solución:\n{vector_solucion}')
 print(f'Solución en formato de matriz:\n{vector_solucion.reshape((len(tablero), len(tablero)))}')
 resolver_tablero(tablero, vector_solucion)
